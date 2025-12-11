@@ -45,19 +45,11 @@ class SimulationView extends ConsumerWidget {
                     Text('Input Controls', style: Theme.of(context).textTheme.headlineSmall),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () {
-                        final currentStock = ref.read(stockListProvider);
-                        stockNotifier.state = [
-                          ...currentStock,
-                          model.StockedItem(species: neonTetra, count: 1)
-                        ];
-                      },
+                      onPressed: () => stockNotifier.addSpecies(neonTetra),
                       child: const Text('Add 1 Neon Tetra'),
                     ),
                      ElevatedButton(
-                      onPressed: () {
-                        stockNotifier.state = [];
-                      },
+                      onPressed: () => stockNotifier.clear(),
                       child: const Text('Clear Stock'),
                     ),
                   ],
