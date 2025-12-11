@@ -1,0 +1,1 @@
+enum ActivityLevel { sedentary, active, hyper }

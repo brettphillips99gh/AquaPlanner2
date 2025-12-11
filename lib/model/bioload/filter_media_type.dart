@@ -1,0 +1,1 @@
+enum FilterMediaType { sponge, ceramicRings, bioBalls, k1Micro }

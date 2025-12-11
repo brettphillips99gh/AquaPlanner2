@@ -1,11 +1,7 @@
 import 'dart:math' as math;
+import 'bioload/bioload.dart';
 
-// --- Enums ---
-enum TrophicLevel { carnivore, omnivore, herbivore }
-enum ActivityLevel { sedentary, active, hyper }
-enum AggressionType { peaceful, semiAggressive, aggressive, predatory }
-enum GrowthStage { juvenile, subAdult, adult }
-enum FilterMediaType { sponge, ceramicRings, bioBalls, k1Micro }
+export 'bioload/bioload.dart';
 
 // --- Data Structures ---
 

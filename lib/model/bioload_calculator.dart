@@ -1,22 +1,6 @@
 import 'dart:math' as math;
 import 'models.dart';
 
-class SystemHealthSnapshot {
-  final double ammoniaStockingPercent; // > 100% means filter failure
-  final double oxygenHeadroom; // > 0 is safe
-  final double dailyAmmoniaProducedGrams;
-  final double dailyAmmoniaProcessedGrams;
-  final List<String> warnings;
-
-  SystemHealthSnapshot({
-    required this.ammoniaStockingPercent,
-    required this.oxygenHeadroom,
-    required this.dailyAmmoniaProducedGrams,
-    required this.dailyAmmoniaProcessedGrams,
-    required this.warnings,
-  });
-}
-
 class BioloadCalculator {
 
   // --- Constants based on Aquaculture Engineering (Timmons & Ebeling) ---

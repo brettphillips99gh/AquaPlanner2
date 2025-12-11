@@ -1,0 +1,1 @@
+enum GrowthStage { juvenile, subAdult, adult }
