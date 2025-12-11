@@ -10,6 +10,7 @@ class SimulationView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final simulationResult = ref.watch(simulationResultProvider);
+    final stock = ref.watch(stockListProvider);
     final stockNotifier = ref.read(stockListProvider.notifier);
 
     // Mock data for a species to add. In a real app, this would come from a database.
@@ -31,60 +32,77 @@ class SimulationView extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Local Aquarium Simulation'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // --- Input Panel ---
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Text('Input Controls', style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => stockNotifier.addSpecies(neonTetra),
-                      child: const Text('Add 1 Neon Tetra'),
-                    ),
-                     ElevatedButton(
-                      onPressed: () => stockNotifier.clear(),
-                      child: const Text('Clear Stock'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // --- Output Panel ---
-            Expanded(
-              child: Card(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // --- Input Panel ---
+              Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Live Simulation Results', style: Theme.of(context).textTheme.headlineSmall),
-                        const SizedBox(height: 16),
-                        Text('Stocking Level: ${simulationResult.health.ammoniaStockingPercent.toStringAsFixed(1)}%'),
-                        Text('Oxygen Headroom: ${simulationResult.health.oxygenHeadroom.toStringAsFixed(1)}'),
-                        const Divider(height: 32),
-                        if (simulationResult.compatibility.errors.isNotEmpty)
-                          ...simulationResult.compatibility.errors.map((e) => Text('ERROR: $e', style: const TextStyle(color: Colors.red))),
-                        if (simulationResult.compatibility.warnings.isNotEmpty)
-                          ...simulationResult.compatibility.warnings.map((w) => Text('WARN: $w', style: const TextStyle(color: Colors.orange))),
-                        if (simulationResult.compatibility.isCompatible)
-                           const Text('All species are compatible.', style: TextStyle(color: Colors.green)),
-                      ],
-                    ),
+                  child: Column(
+                    children: [
+                      Text('Input Controls', style: Theme.of(context).textTheme.headlineSmall),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => stockNotifier.addSpecies(neonTetra),
+                        child: const Text('Add 1 Neon Tetra'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => stockNotifier.clear(),
+                        child: const Text('Clear Stock'),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              // --- Current Stock Display ---
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Current Stock', style: Theme.of(context).textTheme.headlineSmall),
+                      const SizedBox(height: 16),
+                      if (stock.isEmpty)
+                        const Text('No fish in the tank yet.')
+                      else
+                        ...stock.map((item) => Text('${item.count}x ${item.species.name}', style: Theme.of(context).textTheme.bodyLarge)),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // --- Output Panel ---
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Live Simulation Results', style: Theme.of(context).textTheme.headlineSmall),
+                      const SizedBox(height: 16),
+                      Text('Stocking Level: ${simulationResult.health.ammoniaStockingPercent.toStringAsFixed(1)}%'),
+                      Text('Oxygen Headroom: ${simulationResult.health.oxygenHeadroom.toStringAsFixed(1)}'),
+                      const Divider(height: 32),
+                      if (simulationResult.compatibility.errors.isNotEmpty)
+                        ...simulationResult.compatibility.errors.map((e) => Text('ERROR: $e', style: const TextStyle(color: Colors.red)))
+                      else if (simulationResult.compatibility.warnings.isNotEmpty)
+                        ...simulationResult.compatibility.warnings.map((w) => Text('WARN: $w', style: const TextStyle(color: Colors.orange)))
+                      else
+                        const Text('All species are compatible.', style: TextStyle(color: Colors.green)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
