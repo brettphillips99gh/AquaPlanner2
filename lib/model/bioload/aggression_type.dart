@@ -1,1 +1,0 @@
-enum AggressionType { peaceful, semiAggressive, aggressive, predatory }

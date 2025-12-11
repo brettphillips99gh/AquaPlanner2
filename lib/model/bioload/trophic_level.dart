@@ -1,1 +1,0 @@
-enum TrophicLevel { carnivore, omnivore, herbivore }
