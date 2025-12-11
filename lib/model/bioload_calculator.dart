@@ -1,5 +1,5 @@
+import 'dart:math' as math;
 import 'models.dart';
-import 'dart:math';
 
 class SystemHealthSnapshot {
   final double ammoniaStockingPercent; // > 100% means filter failure
@@ -66,13 +66,16 @@ class BioloadCalculator {
     // Formula: Media Volume * Specific Surface Area * Efficiency Factors
 
     double mediaSSA = _getMediaSSA(tank.mediaType);
-    double totalSurfaceArea = tank.filterMediaVolumeLiters * mediaSSA;
+
+    // FIX: Convert Liters to m3 (1000L = 1m3) before SSA calculation
+    double filterMediaVolumeM3 = tank.filterMediaVolumeLiters / 1000.0;
+    double totalSurfaceArea = filterMediaVolumeM3 * mediaSSA;
 
     // Temp Efficiency: Bacteria slow down below 25C
     double tempEfficiency = 1.0;
     if (tank.tempC < 25) {
       // Approx -10% efficiency per degree drop below 25
-      tempEfficiency = max(0.1, 1.0 - ((25 - tank.tempC) * 0.1));
+      tempEfficiency = math.max(0.1, 1.0 - ((25 - tank.tempC) * 0.1));
     }
 
     // Flow Efficiency: Turnover needs to be sufficient to deliver Oxygen to bacteria
@@ -108,7 +111,7 @@ class BioloadCalculator {
     if (stockingPercent > 1.0) {
       warnings.add("CRITICAL: Bio-load (${dailyAmmoniaGrams.toStringAsFixed(2)}g/day) exceeds filter capacity.");
     } else if (stockingPercent > 0.85) {
-      warnings.add("WARNING: Filter is running at ${stockingPercent.toStringAsFixed(2)}% capacity.");
+      warnings.add("WARNING: Filter is running at ${(stockingPercent * 100).toStringAsFixed(0)}% capacity.");
     }
 
     if (oxygenHeadroom < 0) {
@@ -128,6 +131,7 @@ class BioloadCalculator {
     );
   }
 
+  // Returns Specific Surface Area (m2/m3)
   double _getMediaSSA(FilterMediaType type) {
     switch (type) {
       case FilterMediaType.sponge: return 800.0;

@@ -84,7 +84,7 @@ void main() {
       // Expectation: Filter handles Ammonia, but Oxygen runs out
       expect(snapshot.oxygenHeadroom, lessThan(0),
           reason: "Oxygen headroom should be negative in hot, overstocked water");
-      expect(snapshot.warnings, contains(contains("Hypoxia")),
+      expect(snapshot.warnings, contains(contains("hypoxia")),
           reason: "Should trigger Hypoxia warning");
     });
   });

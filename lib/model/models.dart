@@ -20,7 +20,7 @@ class RangeValues {
   RangeValues? intersection(RangeValues other) {
     double newMin = math.max(min, other.min);
     double newMax = math.min(this.max, other.max);
-    if (newMin > newMax) return null;
+    if (newMin >= newMax) return null; // A single point is not a valid range
     return RangeValues(newMin, newMax);
   }
 
