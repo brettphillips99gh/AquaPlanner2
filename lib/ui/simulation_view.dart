@@ -13,7 +13,7 @@ class SimulationView extends ConsumerWidget {
     final stock = ref.watch(stockListProvider);
     final stockNotifier = ref.read(stockListProvider.notifier);
 
-    // Mock data for a species to add. In a real app, this would come from a database.
+    // Mock data for species to add. In a real app, this would come from a database.
     final neonTetra = model.SpeciesDefinition(
         id: 'neon',
         name: 'Neon Tetra',
@@ -27,6 +27,20 @@ class SimulationView extends ConsumerWidget {
         phRange: const model.RangeValues(6.0, 7.5),
         ghRange: const model.RangeValues(2, 10),
         khRange: const model.RangeValues(0, 5));
+
+    final angelfish = model.SpeciesDefinition(
+        id: 'angel',
+        name: 'Angelfish',
+        maxStandardLengthCm: 15.0,
+        averageAdultMassGrams: 40.0,
+        trophicLevel: model.TrophicLevel.carnivore,
+        activityLevel: model.ActivityLevel.sedentary,
+        aggressionType: model.AggressionType.semiAggressive,
+        minShoalSize: 1,
+        tempRange: const model.RangeValues(24, 30),
+        phRange: const model.RangeValues(6.0, 7.5),
+        ghRange: const model.RangeValues(3, 12),
+        khRange: const model.RangeValues(0, 8));
 
     return Scaffold(
       appBar: AppBar(
@@ -46,11 +60,22 @@ class SimulationView extends ConsumerWidget {
                     children: [
                       Text('Input Controls', style: Theme.of(context).textTheme.headlineSmall),
                       const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => stockNotifier.addSpecies(neonTetra),
-                        child: const Text('Add 1 Neon Tetra'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => stockNotifier.addSpecies(neonTetra),
+                            child: const Text('Add Neon'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => stockNotifier.addSpecies(angelfish),
+                            child: const Text('Add Angel'),
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 8),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.errorContainer),
                         onPressed: () => stockNotifier.clear(),
                         child: const Text('Clear Stock'),
                       ),
