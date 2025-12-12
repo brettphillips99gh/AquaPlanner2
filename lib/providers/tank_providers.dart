@@ -10,9 +10,13 @@ final tankProfileProvider = StateProvider<model.TankProfile>((ref) {
       ph: 7.0,
       gh: 5.0,
       kh: 3.0,
-      filterFlowRateLph: 500,
-      filterMediaVolumeLiters: 1.0,
-      mediaType: model.FilterMediaType.sponge,
+      filter: const model.FilterProfile(
+        filterFlowRateLph: 500,
+        filterMediaVolumeLiters: 1.0,
+        mediaSlots: [
+          model.FilterMediaSlot(mediaType: model.FilterMediaType.sponge, portion: 1.0)
+        ],
+      ),
       isPlanted: false
   );
 });

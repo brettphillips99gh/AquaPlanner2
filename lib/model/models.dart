@@ -1,7 +1,13 @@
 import 'dart:math' as math;
 import 'bioload/bioload.dart';
+import 'filter/filter.dart';
 
 export 'bioload/bioload.dart';
+export 'filter/filter.dart';
+
+// --- Configuration Enums ---
+enum LidType { none, mesh, glass }
+enum SurfaceAgitation { none, low, moderate, high }
 
 // --- Data Structures ---
 
@@ -12,7 +18,6 @@ class RangeValues {
 
   bool contains(double value) => value >= min && value <= max;
 
-  // Returns intersection or null if no overlap
   RangeValues? intersection(RangeValues other) {
     double newMin = math.max(min, other.min);
     double newMax = math.min(this.max, other.max);
@@ -71,15 +76,11 @@ class StockedItem {
     this.measuredLengthCm,
   });
 
-  // Estimates mass based on cubic scaling law if actual mass isn't weighed
   double get estimatedTotalMassGrams {
     double individualMass;
-
     if (growthStage == GrowthStage.adult) {
       individualMass = species.averageAdultMassGrams;
     } else {
-      // Cubic scaling estimation for juveniles
-      // Juvenile: ~30% length -> 2.7% mass | SubAdult: ~70% length -> 34% mass
       double lengthFactor = (growthStage == GrowthStage.juvenile) ? 0.3 : 0.7;
       individualMass = species.averageAdultMassGrams * math.pow(lengthFactor, 3);
     }
@@ -97,11 +98,12 @@ class TankProfile {
   final double gh;
   final double kh;
 
-  // Filtration Hardware
-  final double filterFlowRateLph;
-  final double filterMediaVolumeLiters;
-  final FilterMediaType mediaType;
+  // Equipment
+  final FilterProfile filter;
   final bool isPlanted;
+  final bool hasAirstone;
+  final LidType lidType;
+  final SurfaceAgitation surfaceAgitation;
 
   TankProfile({
     required this.volumeLiters,
@@ -110,9 +112,10 @@ class TankProfile {
     required this.ph,
     required this.gh,
     required this.kh,
-    required this.filterFlowRateLph,
-    required this.filterMediaVolumeLiters,
-    required this.mediaType,
+    required this.filter,
     this.isPlanted = false,
+    this.hasAirstone = false,
+    this.lidType = LidType.none,
+    this.surfaceAgitation = SurfaceAgitation.low,
   });
 }

@@ -59,9 +59,13 @@ class AppStateNotifier extends StateNotifier<AppState> {
         volumeLiters: 200,
         surfaceAreaSqMeters: 0.5,
         tempC: 25.0, ph: 6.8, gh: 6.0, kh: 3.0,
-        filterFlowRateLph: 800,
-        filterMediaVolumeLiters: 1.5,
-        mediaType: FilterMediaType.ceramicRings,
+        filter: const FilterProfile(
+          filterFlowRateLph: 800,
+          filterMediaVolumeLiters: 1.5,
+          mediaSlots: [
+            FilterMediaSlot(mediaType: FilterMediaType.ceramicRings, portion: 1.0)
+          ],
+        ),
         isPlanted: true
     );
 
