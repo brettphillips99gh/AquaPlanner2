@@ -1,3 +1,5 @@
+import 'package:aqua_planner_2/model/user_profile.dart';
+
 import 'models.dart';
 
 class CompatibilityReport {
@@ -22,12 +24,58 @@ class CompatibilityReport {
 
 class CompatibilityEngine {
 
-  CompatibilityReport validate(TankProfile tank, List<StockedItem> stock) {
+  CompatibilityReport validate(TankProfile tank, List<StockedItem> stock, List<WaterSourceProfile> waterSources) {
     List<String> errors = [];
     List<String> warnings = [];
 
+    // --- NEW: LOOKUP THE WATER SOURCE ---
+    WaterSourceProfile? sourceWater;
+    try {
+      sourceWater = waterSources.firstWhere((ws) => ws.id == tank.waterSourceId);
+    } catch (e) {
+      // This is a data integrity error.
+      errors.add('Data Error: The water source with ID "${tank.waterSourceId}" could not be found.');
+      // Return early as further checks are unreliable.
+      return CompatibilityReport(
+          isCompatible: false, // Explicitly false because of the data error.
+          errors: errors,      // The list containing our error message.
+          warnings: warnings,    // The empty list of warnings.
+          // Explicitly nullify the safe ranges as they cannot be calculated.
+          safeTemp: null,
+          safePh: null,
+          safeGh: null,
+          safeKh: null,
+      );
+    }
+
+
     if (stock.isEmpty) {
-      return CompatibilityReport(isCompatible: true, errors: [], warnings: []);
+      return CompatibilityReport(
+        isCompatible: true,
+        errors: [],
+        warnings: [],
+        // Ensure all other fields are non-null
+        safeTemp: null,
+        safePh: null,
+        safeGh: null,
+        safeKh: null,
+      );
+    }
+
+    // --- CHECK 0: SOURCE WATER SUITABILITY (using the looked-up sourceWater) ---
+    for (final item in stock) {
+      final species = item.species;
+      // Check if source water pH is suitable
+      if (!species.phRange.contains(sourceWater.ph)) {
+        warnings.add(
+            "Source Water Alert for ${species.name}: Your '${sourceWater.name}' pH (${sourceWater.ph}) is outside this species' tolerable range.");
+      }
+      // Check for GH, KH, and now TDS
+      if (!species.tdsRange.contains(sourceWater.tds)) {
+        warnings.add(
+            "Source Water Alert for ${species.name}: Your '${sourceWater.name}' TDS (${sourceWater.tds.toStringAsFixed(0)}ppm) is outside this species' preferred range.");
+      }
+      // ... more source water checks ...
     }
 
     // --- CHECK 1: FIND COMMON WATER PARAMETERS ---

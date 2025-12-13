@@ -19,6 +19,17 @@ class BioloadCalculator {
   SystemHealthSnapshot calculate(TankProfile tank, List<StockedItem> stock) {
     List<String> warnings = [];
 
+    if (stock.isEmpty) {
+      return SystemHealthSnapshot(
+        ammoniaStockingPercent: 0,
+        oxygenHeadroom: 999, // Effectively infinite headroom
+        dailyAmmoniaProducedGrams: 0,
+        dailyAmmoniaProcessedGrams: _capacityCalculator.calculateFilterCapacity(
+            tank.volumeLiters, tank.tempC, tank.filter),
+        warnings: [],
+      );
+    }
+
     // --- STEP 1: CALCULATE THE INPUT (The Source) ---
     double dailyAmmoniaGrams = _calculateAmmoniaProduction(stock);
     double metabolicLoadSum = _calculateMetabolicLoad(stock);
